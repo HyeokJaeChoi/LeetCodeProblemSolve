@@ -5,7 +5,7 @@
  * **Space Complexity: `O(n + m)`**
  * - `StringBuilder(mergeWord)` holds all characters from both word1 and word2, so `O(n + m)`
  */
-package Day1
+package day1
 
 import kotlin.math.max
 

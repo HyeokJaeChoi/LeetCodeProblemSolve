@@ -9,7 +9,7 @@
  * - Two `StringBuilder`s (`str1Builder`, `str2Builder`) each copy the original strings, so `O(n + m)`
  * - Temporary strings like `modString` and `prefix` are `O(min(n, m))`, dominated by `O(n + m)`
  */
-package Day1
+package day1
 
 class GreatestCommonDivisorOfStrings1071 {
     companion object {

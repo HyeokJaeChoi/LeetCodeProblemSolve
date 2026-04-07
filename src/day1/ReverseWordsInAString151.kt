@@ -28,7 +28,7 @@
  * - `reversed()` creates a new list of `w` references in `O(w)`
  * - `joinToString` result string is `O(n)`
  */
-package Day1
+package day1
 
 class ReverseWordsInAString151 {
     companion object {
