@@ -35,6 +35,7 @@ This project uses IntelliJ IDEA's built-in build system with the Kotlin JVM runt
 - All comments must be written in **KDoc format** (`/** ... */`) and in **English**
 - Place the KDoc block at the **top of the file**, before the `package` declaration
 - Do not use `@param` or `@return` tags
+- **NEVER add Time/Space Complexity KDoc to files that contain `UNSOLVED` in their existing comment.** These files are works in progress and must not have complexity comments added until the solution is complete.
 - Each solution must document Time Complexity and Space Complexity using this exact format:
 
 ```kotlin
