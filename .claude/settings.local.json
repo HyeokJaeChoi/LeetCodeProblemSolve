@@ -22,7 +22,8 @@
       "Read(//opt/homebrew/Cellar/kotlin-lsp/**)",
       "Bash(kotlin-lsp --help)",
       "Bash(brew uninstall:*)",
-      "Bash(npx ctx7@latest:*)"
+      "Bash(npx ctx7@latest:*)",
+      "Bash(ssh-keygen -t ed25519 -C \"github-$\\(date +%Y%m%d\\)\" -f ~/.ssh/id_ed25519 -N \"\")"
     ]
   },
   "prefersReducedMotion": false
