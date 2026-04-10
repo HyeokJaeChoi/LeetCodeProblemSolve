@@ -1,3 +1,13 @@
+/**
+ * **Time Complexity: `O(N log N)`** where `N` = total number of nodes across all lists
+ * - All nodes from K lists are inserted into a min-heap (`offer`) in `O(N log N)`
+ * - All nodes are extracted from the heap (`poll`) in `O(N log N)`
+ * - Linking the sorted nodes into a linked list is `O(N)`
+ *
+ * **Space Complexity: `O(N)`**
+ * - The heap stores all `N` nodes simultaneously
+ * - The `list` (MutableList) also holds all `N` nodes for linking
+ */
 package day6
 
 import java.util.PriorityQueue
