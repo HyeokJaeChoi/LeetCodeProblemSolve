@@ -30,12 +30,17 @@ This project uses IntelliJ IDEA's built-in build system with the Kotlin JVM runt
 - When the user asks about a coding problem, **only provide hints or approach guidance** — do not reveal the full solution
 - Give the full solution only when the user explicitly says **"정답을 알려줘"**
 
+## Solution Code Immutability
+
+- **NEVER modify the body of any solution function** (e.g., `longestOnes`, `longestSubarray`, or any problem-solving method) without the user's explicit instruction to do so.
+- The `main` function (test runner) is the only exception — it may be freely added to or modified.
+- If a bug is suspected in the solution code, **report it to the user** and wait for explicit approval before making any change.
+
 ## Code Comments
 
 - All comments must be written in **KDoc format** (`/** ... */`) and in **English**
 - Place the KDoc block at the **top of the file**, before the `package` declaration
 - Do not use `@param` or `@return` tags
-- **NEVER add Time/Space Complexity KDoc to files that contain `UNSOLVED` in their existing comment.** These files are works in progress and must not have complexity comments added until the solution is complete.
 - Each solution must document Time Complexity and Space Complexity using this exact format:
 
 ```kotlin

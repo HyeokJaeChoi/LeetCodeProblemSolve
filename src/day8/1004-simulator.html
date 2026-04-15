@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeetCode 1004 - Max Consecutive Ones III</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 20px;
+  }
+
+  /* Test Case Selector */
+  .tc-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .tc-label { font-size: 0.8rem; color: #64748b; margin-right: 4px; }
+
+  .tc-btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 2px solid #334155;
+    background: #1e293b;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .tc-btn:hover { border-color: #3b82f6; color: #60a5fa; }
+  .tc-btn.active { border-color: #3b82f6; background: #1d4ed8; color: #fff; }
+
+  /* Array Visualization */
+  .array-section {
+    background: #1e293b;
+    border-radius: 14px;
+    padding: 24px 20px 20px;
+    margin-bottom: 16px;
+    border: 1px solid #334155;
+  }
+
+  .array-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+
+  .array-wrapper {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .array-row {
+    display: flex;
+    gap: 6px;
+    min-width: max-content;
+    margin-bottom: 6px;
+  }
+
+  .cell-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .cell-idx {
+    font-size: 0.65rem;
+    color: #475569;
+    width: 44px;
+    text-align: center;
+  }
+
+  .cell {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border: 2px solid transparent;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  /* Cell states */
+  .cell.outside   { background: #1e293b; border-color: #334155; color: #475569; }
+  .cell.window-one { background: #1d4ed8; border-color: #3b82f6; color: #fff; }
+  .cell.window-zero { background: #d97706; border-color: #f59e0b; color: #fff; } /* flipped zero */
+  .cell.active    { background: #7c3aed; border-color: #a78bfa; color: #fff; box-shadow: 0 0 0 3px rgba(167,139,250,0.35); transform: scale(1.1); }
+  .cell.shrink    { background: #dc2626; border-color: #f87171; color: #fff; box-shadow: 0 0 0 3px rgba(248,113,113,0.35); transform: scale(1.1); }
+  .cell.done-window { background: #065f46; border-color: #10b981; color: #fff; }
+
+  .pointer-row {
+    display: flex;
+    gap: 6px;
+    min-width: max-content;
+    margin-top: 2px;
+  }
+
+  .ptr {
+    width: 44px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .ptr.left-ptr  { background: #0f4c75; color: #38bdf8; border: 1px solid #0369a1; }
+  .ptr.right-ptr { background: #4a1d96; color: #c4b5fd; border: 1px solid #6d28d9; }
+  .ptr.both-ptr  { background: #134e4a; color: #34d399; border: 1px solid #059669; }
+  .ptr.empty     { background: transparent; border: none; }
+
+  /* Variables Panel */
+  .vars-panel {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .var-card {
+    flex: 1;
+    min-width: 80px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .var-card.highlight {
+    border-color: #f59e0b;
+    background: #292524;
+  }
+
+  .var-name {
+    font-size: 0.68rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .var-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #f8fafc;
+    transition: all 0.2s;
+  }
+
+  .var-card.left-card  .var-value { color: #38bdf8; }
+  .var-card.right-card .var-value { color: #c4b5fd; }
+  .var-card.curr-card  .var-value { color: #fb923c; }
+  .var-card.k-card     .var-value { color: #94a3b8; }
+  .var-card.ans-card   .var-value { color: #4ade80; }
+
+  /* Step Description */
+  .desc-box {
+    background: #1e293b;
+    border-radius: 12px;
+    border-left: 4px solid #3b82f6;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    transition: border-color 0.2s;
+  }
+
+  .desc-box.phase-init     { border-color: #64748b; }
+  .desc-box.phase-advance  { border-color: #3b82f6; }
+  .desc-box.phase-shrink   { border-color: #ef4444; }
+  .desc-box.phase-update   { border-color: #22c55e; }
+  .desc-box.phase-update-new { border-color: #f59e0b; }
+  .desc-box.phase-done     { border-color: #a855f7; }
+
+  .desc-phase-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .tag-init     { background: #334155; color: #94a3b8; }
+  .tag-advance  { background: #1d4ed8; color: #bfdbfe; }
+  .tag-shrink   { background: #7f1d1d; color: #fca5a5; }
+  .tag-update   { background: #14532d; color: #86efac; }
+  .tag-update-new { background: #78350f; color: #fcd34d; }
+  .tag-done     { background: #4c1d95; color: #ddd6fe; }
+
+  .desc-text {
+    font-size: 0.88rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-prev     { background: #334155; color: #e2e8f0; }
+  .btn-prev:not(:disabled):hover { background: #475569; }
+
+  .btn-next     { background: #1d4ed8; color: #fff; }
+  .btn-next:not(:disabled):hover { background: #2563eb; }
+
+  .btn-play     { background: #059669; color: #fff; }
+  .btn-play:not(:disabled):hover { background: #10b981; }
+
+  .btn-pause    { background: #d97706; color: #fff; }
+  .btn-pause:not(:disabled):hover { background: #f59e0b; }
+
+  .btn-reset    { background: #7f1d1d; color: #fca5a5; }
+  .btn-reset:not(:disabled):hover { background: #dc2626; color: #fff; }
+
+  .speed-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .speed-label { font-size: 0.75rem; color: #64748b; }
+
+  .speed-select {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  /* Progress */
+  .progress-bar-wrap {
+    background: #1e293b;
+    border-radius: 999px;
+    height: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 999px;
+    transition: width 0.2s;
+  }
+
+  .step-counter {
+    font-size: 0.75rem;
+    color: #475569;
+    text-align: right;
+    margin-bottom: 20px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    background: #1e293b;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    margin-top: 4px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: #94a3b8;
+  }
+
+  .legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── Code Explanation ── */
+  .explain-section {
+    margin-top: 32px;
+    border-top: 1px solid #1e293b;
+    padding-top: 28px;
+  }
+
+  .explain-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+  }
+
+  .explain-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 20px;
+  }
+
+  .core-idea {
+    background: #0f2744;
+    border: 1px solid #1e40af;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+
+  .core-idea-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #60a5fa;
+    margin-bottom: 10px;
+  }
+
+  .core-idea p {
+    font-size: 0.88rem;
+    color: #bfdbfe;
+    line-height: 1.7;
+  }
+
+  .core-idea strong { color: #93c5fd; }
+
+  .code-explain-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .code-line-block {
+    background: #1e293b;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+
+  .code-line-block:hover { border-color: #475569; }
+
+  .code-line-block.group-var    { border-left: 3px solid #64748b; }
+  .code-line-block.group-loop   { border-left: 3px solid #3b82f6; }
+  .code-line-block.group-expand { border-left: 3px solid #7c3aed; }
+  .code-line-block.group-shrink { border-left: 3px solid #ef4444; }
+  .code-line-block.group-ans    { border-left: 3px solid #22c55e; }
+  .code-line-block.group-idea   { border-left: 3px solid #f59e0b; }
+
+  .clb-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .clb-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .badge-var    { background: #1e293b; color: #64748b; border: 1px solid #334155; }
+  .badge-loop   { background: #1d4ed8; color: #bfdbfe; }
+  .badge-expand { background: #4c1d95; color: #ddd6fe; }
+  .badge-shrink { background: #7f1d1d; color: #fca5a5; }
+  .badge-ans    { background: #14532d; color: #86efac; }
+  .badge-idea   { background: #78350f; color: #fcd34d; }
+
+  .clb-code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: #94a3b8;
+    flex: 1;
+  }
+
+  .clb-code .kw  { color: #c084fc; }   /* keyword */
+  .clb-code .tp  { color: #67e8f9; }   /* type */
+  .clb-code .nm  { color: #fde68a; }   /* name */
+  .clb-code .op  { color: #f9a8d4; }   /* operator */
+  .clb-code .cm  { color: #4b5563; }   /* comment */
+  .clb-code .nb  { color: #fb923c; }   /* number */
+
+  .clb-toggle {
+    font-size: 0.7rem;
+    color: #475569;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  .clb-body {
+    padding: 0 16px 14px 16px;
+    border-top: 1px solid #0f172a;
+  }
+
+  .clb-intent {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    line-height: 1.75;
+    padding-top: 12px;
+  }
+
+  .clb-intent strong { color: #e2e8f0; }
+  .clb-intent code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: #0f172a;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #fde68a;
+  }
+
+  .clb-intent .highlight-box {
+    background: #0f2744;
+    border: 1px solid #1e40af;
+    border-radius: 7px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #93c5fd;
+    line-height: 1.7;
+  }
+
+  .clb-intent .warn-box {
+    background: #1c1917;
+    border: 1px solid #78350f;
+    border-radius: 7px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #fcd34d;
+    line-height: 1.7;
+  }
+
+  .clb-closed .clb-body { display: none; }
+  .clb-closed .clb-toggle { transform: rotate(-90deg); }
+</style>
+</head>
+<body>
+
+<h1>LeetCode 1004 — Max Consecutive Ones III</h1>
+<p class="subtitle">슬라이딩 윈도우 알고리즘 시뮬레이터 | k개 이하의 0을 뒤집어 만들 수 있는 최대 연속 1의 길이</p>
+
+<!-- Test Case Selector -->
+<div class="tc-bar">
+  <span class="tc-label">테스트 케이스:</span>
+  <button class="tc-btn active" id="tc1" onclick="selectTC(0)">
+    TC1: [1,1,1,0,0,0,1,1,1,1,0], k=2 → <strong>6</strong>
+  </button>
+  <button class="tc-btn" id="tc2" onclick="selectTC(1)">
+    TC2: [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k=3 → <strong>10</strong>
+  </button>
+</div>
+
+<!-- Array Visualization -->
+<div class="array-section">
+  <div class="array-label">Array Visualization</div>
+  <div class="array-wrapper">
+    <div class="array-row" id="idx-row"></div>
+    <div class="array-row" id="cell-row"></div>
+    <div class="pointer-row" id="ptr-row"></div>
+  </div>
+</div>
+
+<!-- Variables -->
+<div class="vars-panel">
+  <div class="var-card left-card"  id="var-left">
+    <div class="var-name">left</div>
+    <div class="var-value" id="val-left">0</div>
+  </div>
+  <div class="var-card right-card" id="var-right">
+    <div class="var-name">right</div>
+    <div class="var-value" id="val-right">-</div>
+  </div>
+  <div class="var-card curr-card"  id="var-curr">
+    <div class="var-name">curr (zeros)</div>
+    <div class="var-value" id="val-curr">0</div>
+  </div>
+  <div class="var-card k-card"     id="var-k">
+    <div class="var-name">k</div>
+    <div class="var-value" id="val-k">-</div>
+  </div>
+  <div class="var-card ans-card"   id="var-ans">
+    <div class="var-name">ans</div>
+    <div class="var-value" id="val-ans">0</div>
+  </div>
+</div>
+
+<!-- Step Description -->
+<div class="desc-box phase-init" id="desc-box">
+  <span class="desc-phase-tag tag-init" id="desc-tag">INIT</span>
+  <span class="desc-text" id="desc-text">시작 버튼을 눌러 시뮬레이션을 시작하세요.</span>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <button class="btn btn-prev"  id="btn-prev"  onclick="prevStep()" disabled>◀ 이전</button>
+  <button class="btn btn-next"  id="btn-next"  onclick="nextStep()">다음 ▶</button>
+  <button class="btn btn-play"  id="btn-play"  onclick="autoPlay()">▶▶ Auto Play</button>
+  <button class="btn btn-pause" id="btn-pause" onclick="pausePlay()" disabled>⏸ 일시정지</button>
+  <button class="btn btn-reset" id="btn-reset" onclick="reset()">⏹ 초기화</button>
+  <div class="speed-group">
+    <span class="speed-label">속도:</span>
+    <select class="speed-select" id="speed-select">
+      <option value="1200">느리게</option>
+      <option value="700" selected>보통</option>
+      <option value="350">빠르게</option>
+      <option value="120">매우 빠르게</option>
+    </select>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+</div>
+<div class="step-counter" id="step-counter">Step 0 / 0</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#1d4ed8;border:2px solid #3b82f6"></div>
+    윈도우 내 1
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#d97706;border:2px solid #f59e0b"></div>
+    윈도우 내 0 (뒤집힌 상태)
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#7c3aed;border:2px solid #a78bfa"></div>
+    현재 right 이동
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#dc2626;border:2px solid #f87171"></div>
+    윈도우 축소 (left 이동)
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#334155;border:2px solid #475569"></div>
+    윈도우 외부
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#065f46;border:2px solid #10b981"></div>
+    최종 최대 윈도우
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- Code Explanation Section                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="explain-section">
+  <div class="explain-title">코드 라인별 해설</div>
+  <div class="explain-subtitle">각 항목을 클릭하면 해당 라인의 의도와 이유를 볼 수 있습니다.</div>
+
+  <!-- Core Idea -->
+  <div class="core-idea">
+    <div class="core-idea-title">핵심 아이디어 — 슬라이딩 윈도우</div>
+    <p>
+      이 문제의 핵심은 <strong>"0을 최대 k번 뒤집을 수 있다"</strong>는 것을
+      <strong>"윈도우 안에 0이 최대 k개까지 허용된다"</strong>로 바꿔 생각하는 것입니다.<br><br>
+      두 포인터 <code>left</code>와 <code>right</code>로 배열 위를 움직이는 창문(윈도우)을 만들고,
+      <strong>right는 항상 앞으로만 이동</strong>하면서 윈도우를 확장합니다.
+      윈도우 안의 0이 k개를 넘으면 <strong>left를 오른쪽으로 밀어</strong> 윈도우를 줄입니다.
+      이때 매 순간 윈도우 크기(<code>right - left + 1</code>)가 곧 "0을 k번 뒤집었을 때 연속 1의 길이"입니다.
+    </p>
+  </div>
+
+  <!-- Line blocks -->
+  <div class="code-explain-grid">
+
+    <!-- 1. 변수 선언 -->
+    <div class="code-line-block group-var clb-closed" onclick="toggleBlock(this)">
+      <div class="clb-header">
+        <span class="clb-badge badge-var">변수 선언</span>
+        <span class="clb-code">
+          <span class="kw">int</span> <span class="nm">left</span> <span class="op">=</span> <span class="nb">0</span>;
+          &nbsp;<span class="kw">int</span> <span class="nm">curr</span> <span class="op">=</span> <span class="nb">0</span>;
+          &nbsp;<span class="kw">int</span> <span class="nm">ans</span> <span class="op">=</span> <span class="nb">0</span>;
+        </span>
+        <span class="clb-toggle">▼</span>
+      </div>
+      <div class="clb-body">
+        <div class="clb-intent">
+          세 개의 변수를 초기화합니다.<br><br>
+          <strong>left</strong>: 슬라이딩 윈도우의 왼쪽 끝 인덱스. 오른쪽 루프 변수 <code>right</code>와 함께 현재 윈도우의 범위 <code>[left, right]</code>를 정의합니다.<br><br>
+          <strong>curr</strong>: 현재 윈도우 안에 있는 <code>0</code>의 개수. "몇 개의 0을 뒤집었는가"를 추적합니다. <code>curr &le; k</code>이면 유효한 윈도우입니다.<br><br>
+          <strong>ans</strong>: 지금까지 발견한 유효한 윈도우의 최대 크기. 최종 답이 됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. for 루프 -->
+    <div class="code-line-block group-loop clb-closed" onclick="toggleBlock(this)">
+      <div class="clb-header">
+        <span class="clb-badge badge-loop">외부 루프</span>
+        <span class="clb-code">
+          <span class="kw">for</span> (<span class="kw">int</span> <span class="nm">right</span> <span class="op">=</span> <span class="nb">0</span>; <span class="nm">right</span> <span class="op">&lt;</span> nums.length; <span class="nm">right</span>++)
+        </span>
+        <span class="clb-toggle">▼</span>
+      </div>
+      <div class="clb-body">
+        <div class="clb-intent">
+          <strong>right 포인터가 배열을 왼쪽에서 오른쪽으로 한 칸씩 전진</strong>합니다.<br><br>
+          right는 <strong>절대 뒤로 가지 않습니다</strong>. 매 반복마다 윈도우의 오른쪽 끝을 한 칸 확장합니다.<br><br>
+          left는 이 루프 안에서 필요할 때만 앞으로 이동합니다. 두 포인터 모두 한 방향으로만 가기 때문에 전체 시간 복잡도가 <strong>O(n)</strong>이 됩니다.
+          <div class="highlight-box">
+            💡 right가 n번 전진, left도 최대 n번 전진 → 총 이동 횟수 최대 2n → <strong>O(n)</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. if nums[right] == 0 -->
+    <div class="code-line-block group-expand clb-closed" onclick="toggleBlock(this)">
+      <div class="clb-header">
+        <span class="clb-badge badge-expand">윈도우 확장</span>
+        <span class="clb-code">
+          <span class="kw">if</span> (nums[<span class="nm">right</span>] <span class="op">==</span> <span class="nb">0</span>) { <span class="nm">curr</span><span class="op">++</span>; }
+        </span>
+        <span class="clb-toggle">▼</span>
+      </div>
+      <div class="clb-body">
+        <div class="clb-intent">
+          right가 가리키는 새 원소를 윈도우에 편입시킵니다.<br><br>
+          <strong>새 원소가 0이면</strong> "0을 하나 더 뒤집은 것"이므로 <code>curr</code>을 1 증가시킵니다.<br>
+          <strong>새 원소가 1이면</strong> 뒤집을 필요가 없으므로 <code>curr</code>은 그대로입니다.<br><br>
+          우리가 1을 세지 않고 <strong>0만 세는 이유</strong>: 윈도우가 "유효"한지 판단하는 기준이 0의 개수이기 때문입니다. 1은 항상 원하는 값이므로 제한 없이 포함할 수 있습니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. while curr > k -->
+    <div class="code-line-block group-shrink clb-closed" onclick="toggleBlock(this)">
+      <div class="clb-header">
+        <span class="clb-badge badge-shrink">윈도우 축소 (while)</span>
+        <span class="clb-code">
+          <span class="kw">while</span> (<span class="nm">curr</span> <span class="op">&gt;</span> <span class="nm">k</span>) { ... }
+        </span>
+        <span class="clb-toggle">▼</span>
+      </div>
+      <div class="clb-body">
+        <div class="clb-intent">
+          <strong>윈도우 안의 0이 k개를 초과하면</strong> — 즉, 허용된 횟수보다 더 많이 뒤집어야 하는 상태가 되면 — 윈도우가 무효입니다.<br><br>
+          이때 <code>left</code>를 오른쪽으로 밀어 윈도우 왼쪽을 잘라냄으로써 윈도우를 줄입니다. <code>curr &le; k</code>가 될 때까지 반복합니다.<br><br>
+          <strong>왜 if가 아니라 while인가?</strong>
+          <div class="warn-box">
+            실제로는 right가 한 번에 한 칸만 이동하고, 그때 추가되는 0은 최대 1개이므로 curr은 최대 1만 초과합니다.<br>
+            따라서 이 경우엔 <code>if</code>와 <code>while</code>이 동일하게 동작합니다.<br>
+            그러나 <strong>일반적인 슬라이딩 윈도우 패턴으로서 while을 쓰는 것이 정석</strong>입니다. "조건이 해소될 때까지 계속 줄인다"는 의도를 명확하게 표현합니다.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. while 내부 if -->
+    <div class="code-line-block group-shrink clb-closed" onclick="toggleBlock(this)">
+      <div class="clb-header">
+        <span class="clb-badge badge-shrink">윈도우 축소 (내부)</span>
+        <span class="clb-code">
+          <span class="kw">if</span> (nums[<span class="nm">left</span>] <span class="op">==</span> <span class="nb">0</span>) { <span class="nm">curr</span><span class="op">--</span>; } &nbsp;<span class="nm">left</span><span class="op">++</span>;
+        </span>
+        <span class="clb-toggle">▼</span>
+      </div>
+      <div class="clb-body">
+        <div class="clb-intent">
+          left가 가리키는 원소를 윈도우 밖으로 밀어냅니다.<br><br>
+          <strong>밀려나는 원소가 0이면</strong>: 그 0은 더 이상 윈도우 안에 없으므로 <code>curr--</code>로 0의 카운트를 줄입니다.<br>
+          <strong>밀려나는 원소가 1이면</strong>: curr에 영향을 주지 않습니다. 그냥 <code>left++</code>만 합니다.<br><br>
+          이 두 동작 이후 left가 한 칸 앞으로 이동하여 윈도우가 왼쪽에서 하나 축소됩니다.
+          <div class="highlight-box">
+            🔑 핵심: <code>curr</code>은 항상 <strong>현재 윈도우 [left, right] 안의 0의 개수</strong>를 정확하게 반영합니다. left가 이동할 때마다 동기화합니다.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. ans 갱신 -->
+    <div class="code-line-block group-ans clb-closed" onclick="toggleBlock(this)">
+      <div class="clb-header">
+        <span class="clb-badge badge-ans">최댓값 갱신</span>
+        <span class="clb-code">
+          <span class="nm">ans</span> <span class="op">=</span> Math.max(<span class="nm">ans</span>, <span class="nm">right</span> <span class="op">-</span> <span class="nm">left</span> <span class="op">+</span> <span class="nb">1</span>);
+        </span>
+        <span class="clb-toggle">▼</span>
+      </div>
+      <div class="clb-body">
+        <div class="clb-intent">
+          while 루프가 끝나면 현재 윈도우 <code>[left, right]</code>는 반드시 <strong>유효한 상태</strong>(<code>curr &le; k</code>)입니다.<br><br>
+          이 유효한 윈도우의 크기 <code>right - left + 1</code>과 지금까지의 최댓값 <code>ans</code>를 비교해 더 큰 값을 저장합니다.<br><br>
+          <strong>왜 +1인가?</strong> 인덱스 기반이므로 길이 = 끝 인덱스 - 시작 인덱스 + 1. (예: [2, 5] → 길이 4 = 5-2+1)<br><br>
+          이 한 줄이 루프의 마지막마다 실행되기 때문에, 모든 가능한 유효 윈도우의 최댓값이 자동으로 기록됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. return ans -->
+    <div class="code-line-block group-idea clb-closed" onclick="toggleBlock(this)">
+      <div class="clb-header">
+        <span class="clb-badge badge-idea">반환</span>
+        <span class="clb-code">
+          <span class="kw">return</span> <span class="nm">ans</span>;
+        </span>
+        <span class="clb-toggle">▼</span>
+      </div>
+      <div class="clb-body">
+        <div class="clb-intent">
+          루프가 끝나면 <code>ans</code>에는 "최대 k번 0을 뒤집었을 때 만들 수 있는 연속 1의 최대 길이"가 담겨 있습니다.<br><br>
+          right가 배열을 끝까지 한 번 훑는 동안 발생했던 모든 유효 윈도우 중 가장 큰 크기가 곧 정답입니다.
+          <div class="highlight-box">
+            ✅ 전체 시간 복잡도: <strong>O(n)</strong> — left, right 각각 최대 n번 이동<br>
+            ✅ 전체 공간 복잡도: <strong>O(1)</strong> — 추가 배열 없이 변수 3개만 사용
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleBlock(el) {
+  el.classList.toggle('clb-closed');
+}
+</script>
+
+<script>
+const TEST_CASES = [
+  { nums: [1,1,1,0,0,0,1,1,1,1,0], k: 2, answer: 6 },
+  { nums: [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], k: 3, answer: 10 }
+];
+
+let steps = [];
+let stepIdx = 0;
+let autoTimer = null;
+let currentTC = 0;
+
+// ─── Step Generation ───────────────────────────────────────────────
+function generateSteps(nums, k) {
+  const result = [];
+  let left = 0, curr = 0, ans = 0;
+  let bestLeft = 0, bestRight = -1;
+
+  const snap = (extra) => ({
+    left, right: extra.right ?? -1, curr, ans, k,
+    bestLeft, bestRight,
+    ...extra
+  });
+
+  result.push(snap({
+    right: -1,
+    phase: 'init',
+    description: `변수 초기화: left=0, curr=0, ans=0`,
+    activeCell: -1
+  }));
+
+  for (let right = 0; right < nums.length; right++) {
+    const prevCurr = curr;
+    if (nums[right] === 0) curr++;
+
+    result.push(snap({
+      right,
+      phase: 'advance',
+      description: nums[right] === 0
+        ? `right → [${right}]: nums[${right}]=0 발견 → curr++ (${prevCurr} → ${curr})`
+        : `right → [${right}]: nums[${right}]=1 → curr 그대로 (${curr})`,
+      activeCell: right
+    }));
+
+    while (curr > k) {
+      const prevLeft = left;
+      const prevCurrInner = curr;
+      const wasZero = nums[left] === 0;
+      if (wasZero) curr--;
+      left++;
+
+      result.push(snap({
+        right,
+        phase: 'shrink',
+        description: `curr(${prevCurrInner}) > k(${k}) → 윈도우 축소: nums[${prevLeft}]=${nums[prevLeft]}` +
+          (wasZero ? `, curr-- (${prevCurrInner}→${curr})` : '') +
+          `, left++ (${prevLeft}→${left})`,
+        activeCell: prevLeft,
+        shrinkingLeft: prevLeft
+      }));
+    }
+
+    const windowSize = right - left + 1;
+    const prevAns = ans;
+    ans = Math.max(ans, windowSize);
+    const isNew = ans > prevAns;
+    if (isNew) { bestLeft = left; bestRight = right; }
+
+    result.push(snap({
+      right,
+      phase: isNew ? 'update-new' : 'update',
+      description: `ans = max(${prevAns}, 윈도우크기=${windowSize}) = ${ans}` +
+        (isNew ? `  ← 새로운 최댓값! [${left}..${right}]` : ''),
+      activeCell: -1
+    }));
+  }
+
+  result.push(snap({
+    right: nums.length - 1,
+    phase: 'done',
+    description: `완료! 최대 ${k}번 0을 뒤집어 만들 수 있는 최대 연속 1의 길이 = ${ans}`,
+    activeCell: -1
+  }));
+
+  return result;
+}
+
+// ─── Rendering ─────────────────────────────────────────────────────
+function buildArrayDOM(nums) {
+  const idxRow  = document.getElementById('idx-row');
+  const cellRow = document.getElementById('cell-row');
+  const ptrRow  = document.getElementById('ptr-row');
+  idxRow.innerHTML = cellRow.innerHTML = ptrRow.innerHTML = '';
+
+  nums.forEach((v, i) => {
+    const ig = document.createElement('div');
+    ig.className = 'cell-group';
+    const idx = document.createElement('div');
+    idx.className = 'cell-idx'; idx.textContent = i;
+    ig.appendChild(idx);
+    idxRow.appendChild(ig);
+
+    const cg = document.createElement('div');
+    cg.className = 'cell-group';
+    const cell = document.createElement('div');
+    cell.className = 'cell outside';
+    cell.id = `cell-${i}`;
+    cell.textContent = v;
+    cg.appendChild(cell);
+    cellRow.appendChild(cg);
+
+    const pg = document.createElement('div');
+    pg.className = 'cell-group';
+    const ptr = document.createElement('div');
+    ptr.className = 'ptr empty';
+    ptr.id = `ptr-${i}`;
+    pg.appendChild(ptr);
+    ptrRow.appendChild(pg);
+  });
+}
+
+function renderStep(s, nums) {
+  // Update cells
+  nums.forEach((v, i) => {
+    const cell = document.getElementById(`cell-${i}`);
+    const ptr  = document.getElementById(`ptr-${i}`);
+    cell.className = 'cell';
+    ptr.className = 'ptr empty';
+    ptr.textContent = '';
+
+    const inWindow = s.right >= 0 && i >= s.left && i <= s.right;
+    const isDone = s.phase === 'done';
+
+    if (isDone && i >= s.bestLeft && i <= s.bestRight) {
+      cell.className = 'cell done-window';
+    } else if (s.phase === 'shrink' && i === s.shrinkingLeft) {
+      cell.className = 'cell shrink';
+    } else if (s.phase !== 'init' && i === s.activeCell && s.phase === 'advance') {
+      cell.className = 'cell active';
+    } else if (inWindow) {
+      cell.className = v === 0 ? 'cell window-zero' : 'cell window-one';
+    } else {
+      cell.className = 'cell outside';
+    }
+
+    // Pointer labels
+    const isLeft  = i === s.left && s.right >= 0;
+    const isRight = i === s.right && s.right >= 0;
+    if (isLeft && isRight) {
+      ptr.className = 'ptr both-ptr'; ptr.textContent = 'L=R';
+    } else if (isLeft) {
+      ptr.className = 'ptr left-ptr'; ptr.textContent = 'LEFT';
+    } else if (isRight) {
+      ptr.className = 'ptr right-ptr'; ptr.textContent = 'RIGHT';
+    }
+  });
+
+  // Variables
+  document.getElementById('val-left').textContent  = s.left;
+  document.getElementById('val-right').textContent = s.right >= 0 ? s.right : '-';
+  document.getElementById('val-curr').textContent  = s.curr;
+  document.getElementById('val-k').textContent     = s.k;
+  document.getElementById('val-ans').textContent   = s.ans;
+
+  // Highlight changed vars
+  ['left','right','curr','ans'].forEach(name => {
+    const card = document.getElementById(`var-${name}`);
+    card.classList.toggle('highlight',
+      stepIdx > 0 && steps[stepIdx - 1][name] !== s[name]);
+  });
+
+  // Description
+  const phaseMap = {
+    'init': ['INIT', 'tag-init'],
+    'advance': ['ADVANCE', 'tag-advance'],
+    'shrink': ['SHRINK', 'tag-shrink'],
+    'update': ['UPDATE', 'tag-update'],
+    'update-new': ['NEW MAX!', 'tag-update-new'],
+    'done': ['DONE', 'tag-done']
+  };
+  const [label, tagClass] = phaseMap[s.phase] || ['INFO', 'tag-init'];
+  const descBox = document.getElementById('desc-box');
+  const descTag = document.getElementById('desc-tag');
+  const descText = document.getElementById('desc-text');
+
+  descBox.className = `desc-box phase-${s.phase}`;
+  descTag.className = `desc-phase-tag ${tagClass}`;
+  descTag.textContent = label;
+  descText.textContent = s.description;
+
+  // Progress
+  const pct = steps.length > 1 ? (stepIdx / (steps.length - 1)) * 100 : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('step-counter').textContent =
+    `Step ${stepIdx} / ${steps.length - 1}`;
+
+  // Buttons
+  document.getElementById('btn-prev').disabled = stepIdx === 0;
+  document.getElementById('btn-next').disabled = stepIdx >= steps.length - 1;
+  document.getElementById('btn-play').disabled = stepIdx >= steps.length - 1 || autoTimer !== null;
+  document.getElementById('btn-pause').disabled = autoTimer === null;
+}
+
+// ─── Controls ──────────────────────────────────────────────────────
+function nextStep() {
+  if (stepIdx < steps.length - 1) {
+    stepIdx++;
+    renderStep(steps[stepIdx], TEST_CASES[currentTC].nums);
+  }
+  if (stepIdx >= steps.length - 1) stopAuto();
+}
+
+function prevStep() {
+  if (stepIdx > 0) {
+    stepIdx--;
+    renderStep(steps[stepIdx], TEST_CASES[currentTC].nums);
+  }
+}
+
+function autoPlay() {
+  if (autoTimer !== null) return;
+  const delay = parseInt(document.getElementById('speed-select').value);
+  autoTimer = setInterval(() => {
+    if (stepIdx >= steps.length - 1) { stopAuto(); return; }
+    nextStep();
+  }, delay);
+  document.getElementById('btn-play').disabled  = true;
+  document.getElementById('btn-pause').disabled = false;
+}
+
+function pausePlay() { stopAuto(); }
+
+function stopAuto() {
+  if (autoTimer !== null) { clearInterval(autoTimer); autoTimer = null; }
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-play').disabled  = stepIdx >= steps.length - 1;
+}
+
+function reset() {
+  stopAuto();
+  stepIdx = 0;
+  renderStep(steps[0], TEST_CASES[currentTC].nums);
+}
+
+function selectTC(idx) {
+  stopAuto();
+  currentTC = idx;
+  document.querySelectorAll('.tc-btn').forEach((b, i) =>
+    b.classList.toggle('active', i === idx));
+  const tc = TEST_CASES[idx];
+  steps = generateSteps(tc.nums, tc.k);
+  stepIdx = 0;
+  buildArrayDOM(tc.nums);
+  renderStep(steps[0], tc.nums);
+}
+
+// ─── Init ──────────────────────────────────────────────────────────
+selectTC(0);
+</script>
+</body>
+</html>
