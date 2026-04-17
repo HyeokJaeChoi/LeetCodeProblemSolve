@@ -23,7 +23,8 @@
       "Bash(kotlin-lsp --help)",
       "Bash(brew uninstall:*)",
       "Bash(npx ctx7@latest:*)",
-      "Bash(ssh-keygen -t ed25519 -C \"github-$\\(date +%Y%m%d\\)\" -f ~/.ssh/id_ed25519 -N \"\")"
+      "Bash(ssh-keygen -t ed25519 -C \"github-$\\(date +%Y%m%d\\)\" -f ~/.ssh/id_ed25519 -N \"\")",
+      "Bash(/Users/hyukjaechoi/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh *)"
     ]
   },
   "prefersReducedMotion": false
