@@ -43,6 +43,13 @@ This project uses IntelliJ IDEA's built-in build system with the Kotlin JVM runt
 - The `main` function (test runner) is the only exception — it may be freely added to or modified.
 - If a bug is suspected in the solution code, **report it to the user** and wait for explicit approval before making any change.
 
+## Pattern Documents
+
+- When the user asks to document or record a problem-solving **pattern** (e.g., DFS, sliding window, BFS, DP), write the pattern document into the user's Obsidian vault at **`/Users/hyukjaechoi/Documents/Obsidian Vault/`**.
+- Use a filename of the form `<pattern>_pattern.md` (e.g., `dfs_pattern.md`, `sliding_window_pattern.md`).
+- If a matching pattern file already exists in the vault, update it in place rather than creating a duplicate.
+- Do **not** write pattern documents anywhere inside this repository (e.g., no `problemPattern/` or similar local directory).
+
 ## Code Comments
 
 - All comments must be written in **KDoc format** (`/** ... */`) and in **English**

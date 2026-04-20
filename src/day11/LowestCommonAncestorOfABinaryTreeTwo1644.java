@@ -1,3 +1,46 @@
+/**
+ * ## Approach: Post-order DFS + Existence Set
+ *
+ * Variant of LC 236 where `p` or `q` may be missing from the tree.
+ * A pure LC 236 solution is unsafe: its pre-order short-circuit
+ * (`if (node == p || node == q) return node`) returns as soon as one
+ * target is hit, without proving the other target actually exists.
+ *
+ * ## Key Idea
+ * - Recurse fully into both children **before** checking `node == p` / `node == q`.
+ *   Post-order placement guarantees the subtree is explored even when the
+ *   current node is one of the targets, so a missing counterpart cannot be
+ *   masked by an early return.
+ * - A shared `Set<TreeNode>` records every hit on `p` or `q`. After dfs
+ *   finishes, the candidate LCA is accepted only if both targets were seen.
+ *
+ * ## Variables
+ * - `set`    : records which of `{p, q}` were actually encountered in the tree
+ * - `left`   : LCA candidate from the left subtree (or `null`)
+ * - `right`  : LCA candidate from the right subtree (or `null`)
+ * - `answer` : LCA candidate returned by dfs; validated against `set`
+ *
+ * ## Recurrence
+ * 1. Base: `node == null` → return `null`.
+ * 2. Recurse left and right first (post-order).
+ * 3. If `node == p` or `node == q`, record it in `set` and return `node`
+ *    (self is a valid ancestor of itself when the other target lies in its subtree).
+ * 4. Else if both `left` and `right` are non-null → `node` is the split point → return `node`.
+ * 5. Else propagate the non-null side upward (`left != null ? left : right`).
+ * 6. After dfs: return `answer` only if `set` contains both `p` and `q`; otherwise `null`.
+ *
+ * ## Why Post-order (vs LC 236's Pre-order short-circuit)
+ * LC 236 assumes both targets exist, so hitting one is sufficient evidence
+ * of its subtree's relevance. LC 1644 has no such guarantee — existence
+ * must be *proven*, which requires continuing the traversal past a self-hit.
+ *
+ * **Time Complexity: `O(n)`** where `n = number of nodes`
+ * - Each node is visited exactly once by dfs
+ *
+ * **Space Complexity: `O(n)`**
+ * - Recursion stack up to `O(h)` (worst-case `O(n)` on a skewed tree)
+ * - `set` stores at most 2 entries (`p`, `q`), i.e., `O(1)` auxiliary
+ */
 package day11;
 
 import java.util.ArrayDeque;
