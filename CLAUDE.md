@@ -30,6 +30,13 @@ This project uses IntelliJ IDEA's built-in build system with the Kotlin JVM runt
 - When the user asks about a coding problem, **only provide hints or approach guidance** — do not reveal the full solution
 - Give the full solution only when the user explicitly says **"정답을 알려줘"**
 
+## Study Plan Reference
+
+- The user maintains a personal study plan at **`~/12-week-interview-prep-plan.md`** (`/Users/hyukjaechoi/12-week-interview-prep-plan.md`).
+- When the user's message contains keywords related to studying, reviewing, or planning — including but not limited to **학습, 복습, 플랜, 계획, 스터디, study, review, plan, schedule** — you **MUST** read this file first and ground your answer in the guidelines, cadence, topics, and priorities it defines.
+- Do not answer study/plan questions from general knowledge alone; always align recommendations (what to do next, how long to spend, which topic to pick, how to review) with this file.
+- If the file is missing or unreadable, tell the user and ask how to proceed instead of guessing.
+
 ## Solution Code Immutability
 
 - **NEVER modify the body of any solution function** (e.g., `longestOnes`, `longestSubarray`, or any problem-solving method) without the user's explicit instruction to do so.
