@@ -26,7 +26,15 @@
       "Bash(ssh-keygen -t ed25519 -C \"github-$\\(date +%Y%m%d\\)\" -f ~/.ssh/id_ed25519 -N \"\")",
       "Bash(/Users/hyukjaechoi/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh *)",
       "Bash(kotlinc src/day10/PathSumThree437.kt -include-runtime -d /tmp/PathSumThree437.jar)",
-      "Bash(kotlin -classpath /tmp/PathSumThree437.jar day10.PathSumThree437)"
+      "Bash(kotlin -classpath /tmp/PathSumThree437.jar day10.PathSumThree437)",
+      "Bash(brew --version)",
+      "Bash(java -version)",
+      "Bash(kotlinc -version)",
+      "Bash(kotlin -version)",
+      "Bash(grep -i -E \"study|plan|\\\\.md$\")",
+      "Bash(kotlinc src/day11/LongestZigZagPathInABinaryTree1372.kt -include-runtime -d /tmp/LZZ1372.jar)",
+      "Bash(kotlin -classpath /tmp/LZZ1372.jar day11.LongestZigZagPathInABinaryTree1372)",
+      "Bash(git check-ignore *)"
     ]
   },
   "prefersReducedMotion": false
