@@ -34,7 +34,17 @@
       "Bash(grep -i -E \"study|plan|\\\\.md$\")",
       "Bash(kotlinc src/day11/LongestZigZagPathInABinaryTree1372.kt -include-runtime -d /tmp/LZZ1372.jar)",
       "Bash(kotlin -classpath /tmp/LZZ1372.jar day11.LongestZigZagPathInABinaryTree1372)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "WebFetch(domain:www.tryexponent.com)",
+      "WebFetch(domain:www.hellointerview.com)",
+      "WebFetch(domain:bytebytego.com)",
+      "WebFetch(domain:www.designgurus.io)",
+      "WebFetch(domain:www.educative.io)",
+      "WebFetch(domain:interviewing.io)",
+      "WebFetch(domain:neetcode.io)",
+      "WebFetch(domain:blog.bytebytego.com)",
+      "WebSearch",
+      "Bash(rtk read *)"
     ]
   },
   "prefersReducedMotion": false
