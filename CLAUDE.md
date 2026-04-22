@@ -43,6 +43,11 @@ This project uses IntelliJ IDEA's built-in build system with the Kotlin JVM runt
 - The `main` function (test runner) is the only exception — it may be freely added to or modified.
 - If a bug is suspected in the solution code, **report it to the user** and wait for explicit approval before making any change.
 
+## Test Case Requests
+
+- When the user asks to write test cases (e.g., "테케 작성해줘", "isPassed 작성해줘"), **do not proactively judge or mention that the current solution may have bugs**. Just write the test cases and `isPassed` output as requested.
+- The user will discover any issues themselves by running the tests. Only comment on the solution's correctness if the user explicitly asks.
+
 ## Pattern Documents
 
 - When the user asks to document or record a problem-solving **pattern** (e.g., DFS, sliding window, BFS, DP), write the pattern document into the user's Obsidian vault at **`/Users/hyukjaechoi/Documents/Obsidian Vault/`**.

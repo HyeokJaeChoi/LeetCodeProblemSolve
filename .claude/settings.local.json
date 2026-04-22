@@ -44,7 +44,8 @@
       "WebFetch(domain:neetcode.io)",
       "WebFetch(domain:blog.bytebytego.com)",
       "WebSearch",
-      "Bash(rtk read *)"
+      "Bash(rtk read *)",
+      "Bash(rtk ls *)"
     ]
   },
   "prefersReducedMotion": false
