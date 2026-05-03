@@ -41,12 +41,19 @@ This project uses IntelliJ IDEA's built-in build system with the Kotlin JVM runt
 
 - **NEVER modify the body of any solution function** (e.g., `longestOnes`, `longestSubarray`, or any problem-solving method) without the user's explicit instruction to do so.
 - The `main` function (test runner) is the only exception — it may be freely added to or modified.
-- If a bug is suspected in the solution code, **report it to the user** and wait for explicit approval before making any change.
+
+## Bug Reporting Policy
+
+- **NEVER proactively report, hint at, or describe suspected bugs in the solution code** — including infinite loops, off-by-one errors, incorrect logic, missing edge cases, or any other defect.
+- This applies to **all** tasks: test case writing, KDoc, refactoring requests, code reading, debugging help, or any other interaction.
+- Do not say things like "this might have an issue", "I noticed a potential bug", "the loop may not terminate", or point to specific lines as problematic.
+- Do not hedge or hint indirectly (e.g., "you may want to double-check X").
+- Only discuss correctness or bug locations when the user **explicitly** asks (e.g., "버그 알려줘", "어디가 문제야?", "정답 코드 봐줘").
+- The user discovers issues themselves by running tests. Stay silent about correctness until explicitly asked.
 
 ## Test Case Requests
 
-- When the user asks to write test cases (e.g., "테케 작성해줘", "isPassed 작성해줘"), **do not proactively judge or mention that the current solution may have bugs**. Just write the test cases and `isPassed` output as requested.
-- The user will discover any issues themselves by running the tests. Only comment on the solution's correctness if the user explicitly asks.
+- When the user asks to write test cases (e.g., "테케 작성해줘", "isPassed 작성해줘"), just write the test cases and `isPassed` output as requested. See the Bug Reporting Policy above.
 
 ## Pattern Documents
 

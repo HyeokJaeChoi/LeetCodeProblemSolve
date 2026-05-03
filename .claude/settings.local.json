@@ -45,7 +45,12 @@
       "WebFetch(domain:blog.bytebytego.com)",
       "WebSearch",
       "Bash(rtk read *)",
-      "Bash(rtk ls *)"
+      "Bash(rtk ls *)",
+      "Bash(kotlinc src/day16/KeysAndRooms841.kt -include-runtime -d /tmp/keys841.jar)",
+      "Bash(kotlinc /Users/hyukjaechoi/IdeaProjects/LeetCode75/src/day16/KeysAndRooms841.kt -include-runtime -d /tmp/keys841.jar)",
+      "Bash(echo \"exit=$?\")",
+      "Read(//private/tmp/**)",
+      "Bash(kotlinc /Users/hyukjaechoi/IdeaProjects/LeetCode75/src/day16/KeysAndRooms841.kt -include-runtime -d keys841.jar)"
     ]
   },
   "prefersReducedMotion": false
